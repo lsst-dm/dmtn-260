@@ -53,6 +53,14 @@ The use of a separate run for each pipeline is required by the Gen 3 provenance 
 General Priorities
 ==================
 
+Of the outputs produced by the Alert Production pipeline, the most important to have correct and uncorrupted is the APDB, which serves as the source of truth both for later processing and for the externally available Prompt Products database.
+The alert stream is a close second, since it is the primary user interface for transient follow-up, and while erroneous alerts can be retracted, they may trigger other actions in the meantime.
+The central repository and metrics are less important: while the repository is the source of processed visit images (PVIs) and difference images for science users, all other data products are exclusively for internal use.
+
+As far as possible, the Prompt Processing pipeline should be idempotent -- in other words, multiple tries of the same pipeline on the same dataset should yield the same results, no matter what the state of the system.
+This is possible when rebroadcasting the alert stream -- in the worst case, duplicate alerts exist but have the same position and time -- and when running the pipeline from ISR through image differencing.
+However, for reasons explored in :ref:`association`, idempotence cannot be safely achieved with source association.
+
 .. _retries:
 
 Retrying Processing
