@@ -18,6 +18,10 @@ doc_title: "Failure Modes and Error Handling for Prompt Processing"
 # Author names, ordered as a list. Each author name should be formatted as 'First Last'
 authors:
   - "Krzysztof Findeisen"
+  - "Kian-Tat Lim"
+  - "Eric Bellm"
+  - "Hsin-Fang Chiang"
+  - "John Parejko"
 
 # Current document revision date, YYYY-MM-DD
 # Only set this field if you need to manually fix the revision date;
