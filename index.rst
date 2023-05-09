@@ -66,6 +66,28 @@ However, for reasons explored in :ref:`association`, idempotence cannot be safel
 Retrying Processing
 ===================
 
+The execution framework can automatically recover from failures, in the sense of restoring full processing capacity without compromising the framework's state.
+However, recovering the data processing itself is the responsibility of the code running on each worker.
+
+Visit processing can fail at any point, including within and between tasks, and while performing external I/O.
+Even within a single worker, the order of events is not fully deterministic (e.g., two snaps could be ingested and processed up to snap combination in parallel, though we have not yet tried to do so).
+However, the possible failures can be divided into a handful of cases:
+
+- Any failure before the end of APDB writing (which is atomic as of October 2023) has no consequences beyond that worker's local repository.
+  The repository may have ingested raws, or partial pipeline outputs.
+- A failure after APDB writing but before the end of ``DiaPipelineTask``, which contains it, is recoverable only if the task can account for the fact that a previous session already wrote to the APDB.
+  As discussed in :ref:`association`, it is not possible to make APDB writes idempotent.
+- A failure after APDB writing but before or during alert distribution cannot be aborted without leaving the APDB inconsistent with the alert stream.
+  However, retrying is possible, and easy if duplicate alerts are acceptable (see :ref:`general-priorities`).
+- A failure after alert distribution but before or during central repo sync may leave the latter missing PVIs and difference images, which are supposed to be exported to the Rubin Science Platform.
+- A failure after central repo sync may interfere with internal metrics and monitoring, but has no consequences for science users.
+
+In general, the Rubin Observatory project has followed a policy of processing data at most once, not at least once.
+We propose to do the same thing in Prompt Processing, by attempting to retry processing only in the case of specific failure modes that we know to be recoverable.
+As a first approximation, this means that retries are allowed before writing to the APDB, but not afterward.
+Any failures that are not retried automatically can still be handled in next-day processing.
+
+
 .. _association:
 
 APDB and Source Association
