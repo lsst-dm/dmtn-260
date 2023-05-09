@@ -93,6 +93,30 @@ Any failures that are not retried automatically can still be handled in next-day
 APDB and Source Association
 ===========================
 
+The persistent nature of the APDB makes it difficult to retry processing runs that modify it.
+One danger is ID collisions, which cannot be entirely prevented simply by choice of the ID generation algorithm.
+If DiaSource and DiaObject IDs are deterministic functions of only their visit, then pipeline code might handle retries by testing for these IDs in the APDB, and ignoring or overwriting them.
+However, if IDs are not unique (which is hard to verify), treating ID collisions as normal events would lead to silent database corruption.
+On the other hand, if IDs are non-deterministic or depend on context (e.g., the set of existing DiaObjects), then retries may create duplicate entries in the APDB.
+In either case, the best resolution for any conflict depends on the situation, and therefore requires human judgment.
+
+A more fundamental problem is that the source association algorithm is not time-symmetric.
+If there is a DiaObject at a DiaSource's position, the source is merged into the existing object; it not, a new DiaObject is created.
+It follows that the final set of DiaObjects depends on the order in which DiaSources are processed.
+This characteristic is unlikely to change in the future.
+
+The expectation of idempotence (see :ref:`general-priorities`) amounts to making the association results independent of the processing order.
+However, any attempt to achieve this will lead to inconsistencies in the APDB.
+For example, daytime corrections could invalidate the creation of a DiaObject, forcing any later DiaSources associated with it to be reassociated.
+However, since such a recalculation would change which DiaObjects are available for association, the associations of *other* DiaSources with nearby DiaObjects might no longer satisfy the association algorithm's guarantees, unless all associations are recomputed from scratch.
+
+On the other hand, trying to enforce an effective processing order on the fly also leads to inconsistent output.
+For example, preventing a retry or a delayed processing run from using any APDB entries added after the "correct" time can lead to two visits creating DiaObjects at the same position because each is required to ignore the other.
+More complex strategies using validity ranges or other tools can avoid such paradoxes, but may lead to more subtle bugs.
+
+The simplest way to keep a consistent association order when recovering from processing failures is to allow all runs to use the state of the APDB at the final processing time.
+If we (and science users) think of out-of-order visits as precoveries, then there shouldn't be any confusion over the processing order not being strictly chronological.
+
 .. _consistency:
 
 Inconsistent Output
