@@ -122,6 +122,20 @@ If we (and science users) think of out-of-order visits as precoveries, then ther
 Inconsistent Output
 ===================
 
+As noted in :ref:`general-priorities`, the most important pipeline outputs are, in order, the APDB, the alert stream, and the central repository and metrics.
+As of October 2023, this is also the order in which the pipeline produces outputs.
+If pipeline processing fails in its late stages, these outputs may be inconsistent with each other; for example, the APDB may contain DiaSources for which alerts were never sent.
+
+The alert stream can be easily restored from the APDB, which contains a (possibly incomplete) record of which alerts were sent.
+The reverse conversion is unsafe, because injecting associations after other visits have been processed could lead to contradictory source association histories (see :ref:`association`).
+
+The central repository can itself acquire inconsistencies in two ways.
+First, we will try to transfer the outputs from failed (i.e., incomplete) pipelines, as these may help in diagnosing the problem.
+Such a strategy is safe so long as no code assumes that the existence of one dataset implies the existence of another.
+Second, the central repository sync itself may fail, leaving an undefined subset of datasets transferred.
+Again, the immediate risk is that something might assume the repository contains a self-consistent set of outputs; in the longer term, the datasets can be regenerated through daytime processing.
+
+
 .. _bad-data:
 
 Corrupted Pipeline Outputs
