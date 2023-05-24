@@ -178,6 +178,17 @@ However, no current framework allows tasks to be timed in real time; for example
 System Downtime
 ===============
 
+All of the above assumes that failures are single events -- an exception from a single task, a network glitch, an invalid DiaObject.
+However, it's also possible that the system itself will fail for periods much longer than the minute or so it takes to process an image.
+For example, the summit link may be cut, or USDF servers may go offline.
+
+Recovering from such outages will be the responsibility of daytime processing rather than the Prompt Processing framework.
+This catch-up processing will need to create its own alerts, per `DMTN-248`_, and update the APDB accordingly.
+The main concern for Prompt Processing will be ensuring that any ``next_visit`` messages posted during system downtime don't overload it.
+Flushing the event queue when the Prompt Processing service starts will prevent this.
+
+.. _DMTN-248: https://dmtn-248.lsst.io/
+
 .. _summary:
 
 Summary
