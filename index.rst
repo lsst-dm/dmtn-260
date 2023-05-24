@@ -54,7 +54,7 @@ General Priorities
 ==================
 
 Of the outputs produced by the Alert Production pipeline, the most important to have correct and uncorrupted is the APDB, which serves as the source of truth both for later processing and for the externally available Prompt Products database.
-The alert stream is a close second, since it is the primary user interface for transient follow-up, and while erroneous alerts can be retracted, they may trigger other actions in the meantime.
+The alert stream is a close second, since it is the primary user interface for transient follow-up, and while erroneous alerts can be retracted (see :ref:`bad-data`), they may trigger other actions in the meantime.
 The central repository and metrics are less important: while the repository is the source of processed visit images (PVIs) and difference images for science users, all other data products are exclusively for internal use.
 
 As far as possible, the Prompt Processing pipeline should be idempotent -- in other words, multiple tries of the same pipeline on the same dataset should yield the same results, no matter what the state of the system.
@@ -140,6 +140,22 @@ Again, the immediate risk is that something might assume the repository contains
 
 Corrupted Pipeline Outputs
 ==========================
+
+It's possible that some processing errors will allow the pipeline to run to completion while producing large numbers of invalid sources.
+Such sources will clutter the alert stream with false positives, and may confuse source association on later visits.
+
+The Prompt Processing framework does not itself have any way to detect nonsense output.
+However, the Alert Production team is incorporating "circuit breaker" checks into the pipeline; see `DM-37142`_ and its follow-up issues.
+These checks will escalate suspicious outputs into pipeline failures, which can be handled as described above.
+As of October 2023, the proposed checks focus on poor-quality raw inputs; there are no checks specifically guarding DiaSource detection or the APDB.
+
+.. _DM-37142: https://jira.lsstcorp.org/browse/DM-37142
+
+If invalid sources are reported through the alert stream, a way to retract alerts will be useful.
+Such a design is described in `DMTN-259`_.
+It's out of scope for this note, since retraction will require human intervention and cannot be done at processing time.
+
+.. _DMTN-259: https://dmtn-259.lsst.io/
 
 .. _timeout:
 
