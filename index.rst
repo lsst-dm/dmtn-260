@@ -137,6 +137,22 @@ Again, the immediate risk is that something might assume the repository contains
 Corrupted Pipeline Outputs
 ==========================
 
+It's possible that some processing errors will allow the pipeline to run to completion while producing large numbers of invalid sources.
+Such sources will clutter the alert stream with false positives, and may confuse source association on later visits.
+
+The Prompt Processing framework does not itself have any way to detect nonsense output.
+However, the Alert Production team is incorporating "circuit breaker" checks into the pipeline; see `DM-35645`_ and its follow-up issues.
+These checks will escalate suspicious outputs into pipeline failures, which can be handled as described above.
+As of May 2023, the proposed checks focus on poor-quality raw inputs; there are no checks specifically guarding DiaSouce detection or the APDB.
+
+.. _DM-35645: https://jira.lsstcorp.org/browse/DM-35645
+
+If invalid sources are reported through the alert stream, a way to retract alerts will be useful.
+Such a design is described in `DMTN-259`_.
+It's out of scope for this note, since retraction will require human intervention and cannot be done at processing time.
+
+.. _DMTN-259: https://dmtn-259.lsst.io/
+
 .. _timeout:
 
 Pipeline Timeouts
