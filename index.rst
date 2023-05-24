@@ -162,6 +162,17 @@ It's out of scope for this note, since retraction will require human interventio
 Pipeline Timeouts
 =================
 
+Another risk is that, under some circumstances, the pipeline code may fail to terminate.
+This risk is mitigated by the scalable processing framework; taking a single worker out of action will not interfere with the processing of other images or with overall system performance.
+
+The obvious way to handle stuck pipelines is to impose a timeout on either the job or the worker.
+The former carries the risk that the worker will be left in an inconsistent state, corrupting future processing.
+The latter adds the overhead of starting a new worker and preparing its local repository, and (depending on the pipeline state and shutdown handling) risks losing all intermediate data.
+In either case, the possibility of a timeout needs to be accounted for when solving the problems discussed in :ref:`association` and :ref:`consistency`, since a timeout can interrupt processing at *any* time, including during I/O.
+
+It might be possible to impose a timeout at the task level rather than the worker level, to better distinguish between a slow job and a stuck one.
+However, no current framework allows tasks to be timed in real time; for example, timing metrics are only available after a task has completed.
+
 .. _major-downtime:
 
 System Downtime
