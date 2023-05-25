@@ -189,10 +189,26 @@ Flushing the event queue when the Prompt Processing service starts will prevent 
 
 .. _DMTN-248: https://dmtn-248.lsst.io/
 
-.. _summary:
+.. _future:
 
-Summary
-=======
+Future Work
+===========
+
+We will continue revising our error-handling strategies as we gain more experience running the pipeline in real time, and as other parts of the system are clarified.
+
+APDB History
+------------
+
+In early discussions, we considered adding validity ranges to all APDB tables so that the information could be used to make retroactive corrections to the database.
+However, the proposal was dropped on the grounds that validities are intended to mark out-of-date, not erroneous, information.
+However, augmenting the APDB schema with an eye to improving the APDB's robustness is still on the table.
+
+Daytime Corrections
+-------------------
+
+This note assumes that daytime processing will be able to "catch up" on any visits that failed during prompt processing or that were missed because of system downtime.
+It further assumes that the outputs of such processing can be smoothly integrated into the APDB and the central repo.
+However, the exact capabilities of daytime processing are still unclear, and in particular interaction with the APDB will need to be handled carefully.
 
 .. Make in-text citations with: :cite:`bibkey`.
 .. Uncomment to use citations
