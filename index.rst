@@ -68,9 +68,11 @@ Visit processing can fail at any point, including within and between tasks, and 
 Even within a single worker, the order of events is not fully deterministic (e.g., two snaps could be ingested and processed up to snap combination in parallel, though we have not yet tried to do so).
 However, the possible failures can be divided into a handful of cases:
 
-- Any failure before the end of APDB writing (which is atomic as of October 2023) has no consequences beyond that worker's local repository.
+- Any failure before the start of APDB writing (writes are not necessarily atomic) has no consequences beyond that worker's local repository.
   The repository may have ingested raws, or partial pipeline outputs.
-- A failure after APDB writing but before the end of ``DiaPipelineTask``, which contains it, is recoverable only if the task can account for the fact that a previous session already wrote to the APDB.
+- A failure before or during DiaObject writing, but before the start of DiaSource writing, is recoverable if DiaObject entries can be updated without conflict.
+  All of a DiaObject's properties, except for its presence, are derived from its associated DiaSources, so no change is permanent until the sources are written.
+- A failure after the start of DiaSource writing but before the end of ``DiaPipelineTask`` is recoverable only if the task can account for the fact that a previous session already wrote to the APDB.
   As discussed in :ref:`association`, it is not possible to make APDB writes idempotent.
 - A failure after APDB writing but before or during alert distribution cannot be aborted without leaving the APDB inconsistent with the alert stream.
   However, retrying is possible, and easy if duplicate alerts are acceptable (see :ref:`general-priorities`).
@@ -79,7 +81,7 @@ However, the possible failures can be divided into a handful of cases:
 
 In general, the Rubin Observatory project has followed a policy of processing data at most once, not at least once.
 We propose to do the same thing in Prompt Processing, by attempting to retry processing only in the case of specific failure modes that we know to be recoverable.
-As a first approximation, this means that retries are allowed before writing to the APDB, but not afterward.
+As a first approximation, this means that retries are allowed before starting DiaSource writes, but not afterward.
 Any failures that are not retried automatically can still be handled in next-day processing.
 
 
