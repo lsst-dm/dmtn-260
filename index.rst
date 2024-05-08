@@ -79,8 +79,7 @@ However, the possible failures can be divided into a handful of cases:
 - A failure after alert distribution but before or during central repo sync may leave the latter missing PVIs and difference images, which are supposed to be exported to the Rubin Science Platform.
 - A failure after central repo sync may interfere with internal metrics and monitoring, but has no consequences for science users.
 
-In general, the Rubin Observatory project has followed a policy of processing data at most once, not at least once.
-We propose to do the same thing in Prompt Processing, by attempting to retry processing only in the case of specific failure modes that we know to be recoverable.
+We propose to follow a "process at most once" policy in Prompt Processing, by attempting to retry processing only in the case of specific failure modes that we know to be recoverable.
 As a first approximation, this means that retries are allowed before starting DiaSource writes, but not afterward.
 Any failures that are not retried automatically can still be handled in next-day processing.
 
