@@ -18,7 +18,7 @@ Abstract
 
 The Prompt Processing system will be responsible for processing roughly a thousand visits per night, and distributing the results in near real time, for at least ten years of Rubin Observatory operations.
 As such, it must be highly robust to algorithmic, network, and infrastructure failures, ranging from momentary glitches to extended downtimes.
-`DMTN-219`_ introduced the initial design for the Prompt Processing framework; this document expands on the design to address expected failure modes and recovery strategies for each.
+`DMTN-219`_ :cite:`DMTN-219` introduced the initial design for the Prompt Processing framework; this document expands on the design to address expected failure modes and recovery strategies for each.
 
 .. _DMTN-219: https://dmtn-219.lsst.io/
 
@@ -27,8 +27,8 @@ As such, it must be highly robust to algorithmic, network, and infrastructure fa
 Prompt Processing System Overview
 =================================
 
-The Prompt Processing system will receive images from LATISS, LSSTComCam, and LSSTCam, and run one of several pipelines on them, depending on the purpose of the observations.
-In the baseline case (running the full Alert Production pipeline on images for the Legacy Survey of Space and Time), the system will create multiple outputs: the transient alert stream, the alert production database (APDB), datasets in a central repository (including the prompt data products described in the `DPDD`_), and Sasquatch metrics for pipeline analytics and debugging.
+The Prompt Processing system will receive images from LATISS :cite:`10.71929/rubin/2571930`, LSSTComCam :cite:`10.71929/rubin/2561361`, and LSSTCam :cite:`10.71929/rubin/2571927`, and run one of several pipelines on them, depending on the purpose of the observations.
+In the baseline case (running the full Alert Production pipeline :cite:`PSTN-019` on images for the Legacy Survey of Space and Time; :cite:t:`2019ApJ...873..111I`), the system will create multiple outputs: the transient alert stream, the alert production database (APDB; :cite:t:`DMTN-293`), datasets in a central repository (including the prompt data products described in the `DPDD`_; :cite:t:`LSE-163`), and Sasquatch metrics :cite:`DMTN-290` for pipeline analytics and debugging.
 
 .. _DPDD: https://lse-163.lsst.io/
 
@@ -151,10 +151,10 @@ However, the Alert Production team is incorporating "circuit breaker" checks int
 These checks will escalate suspicious outputs into pipeline failures, which can be handled as described above.
 As of October 2023, the proposed checks focus on poor-quality raw inputs; there are no checks specifically guarding DiaSource detection or the APDB.
 
-.. _DM-37142: https://jira.lsstcorp.org/browse/DM-37142
+.. _DM-37142: https://rubinobs.atlassian.net/browse/DM-37142
 
 If invalid sources are reported through the alert stream, a way to retract alerts will be useful.
-Such a design is described in `DMTN-259`_.
+Such a design is described in `DMTN-259`_ :cite:`DMTN-259`.
 It's out of scope for this note, since retraction will require human intervention and cannot be done at processing time.
 
 .. _DMTN-259: https://dmtn-259.lsst.io/
@@ -185,7 +185,7 @@ However, it's also possible that the system itself will fail for periods much lo
 For example, the summit link may be cut, or USDF servers may go offline.
 
 Recovering from such outages will be the responsibility of daytime processing rather than the Prompt Processing framework.
-This catch-up processing will need to create its own alerts, per `DMTN-248`_, and update the APDB accordingly.
+This catch-up processing will need to create its own alerts, per `DMTN-248`_ :cite:`DMTN-248`, and update the APDB accordingly.
 The main concern for Prompt Processing will be ensuring that any ``next_visit`` messages posted during system downtime don't overload it.
 Flushing the event queue when the Prompt Processing service starts will prevent this.
 
@@ -212,9 +212,7 @@ This note assumes that daytime processing will be able to "catch up" on any visi
 It further assumes that the outputs of such processing can be smoothly integrated into the APDB and the central repo.
 However, the exact capabilities of daytime processing are still unclear, and in particular interaction with the APDB will need to be handled carefully.
 
-.. Make in-text citations with: :cite:`bibkey`.
-.. Uncomment to use citations
-.. .. rubric:: References
-.. 
-.. .. bibliography:: local.bib lsstbib/books.bib lsstbib/lsst.bib lsstbib/lsst-dm.bib lsstbib/refs.bib lsstbib/refs_ads.bib
-..    :style: lsst_aa
+References
+==========
+
+.. bibliography::
