@@ -1,6 +1,12 @@
-:tocdepth: 1
+######################################################
+Failure Modes and Error Handling for Prompt Processing
+######################################################
 
-.. sectnum::
+.. abstract::
+
+   The Prompt Processing system will be responsible for processing roughly a thousand visits per night, and distributing the results in near real time, for at least ten years of Rubin Observatory operations. As such, it must be highly robust to algorithmic, network, and infrastructure failures, ranging from momentary glitches to extended downtimes. `DMTN-219 <https://dmtn-219.lsst.io/>`_ introduced the initial design for the Prompt Processing framework; this document expands on the design to address expected failure modes and recovery strategies for each.
+
+
 
 .. Metadata such as the title, authors, and description are set in metadata.yaml
 
