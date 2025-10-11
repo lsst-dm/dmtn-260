@@ -44,3 +44,11 @@ orcid = "https://orcid.org/0000-0002-1181-1621"
 name = "SLAC National Accelerator Laboratory"
 internal_id = "SLAC"
 ror = "https://ror.org/05gzmn429"
+[[technote.authors]]
+name = {given = "John K.", family = "Parejko"}
+internal_id = "parejkojk"
+orcid = "https://orcid.org/0009-0001-9549-0457"
+[[technote.authors.affiliations]]
+name = "University of Washington"
+internal_id = "Washington"
+ror = "https://ror.org/00cvxb145"
